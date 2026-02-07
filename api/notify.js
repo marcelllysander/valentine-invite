@@ -22,7 +22,7 @@ Dari: ${from}
 Waktu: ${acceptedAt}
 Link: ${url}`;
 
-  const tgUrl = `https://api.telegram.org/bot8491358278:AAERMHz91wpOUKFjH0ByVCecUe5gPyjvh08/sendMessage`;
+  const tgUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 
   try {
     const r = await fetch(tgUrl, {
@@ -41,3 +41,4 @@ Link: ${url}`;
     return res.status(500).json({ ok: false, error: "request_failed" });
   }
 }
+

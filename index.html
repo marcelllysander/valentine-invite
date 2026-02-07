@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0b14" />
+    <title>💘 Undangan Valentine</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+      :root {
+        --bg1: #070712;
+        --bg2: #0e0b1f;
+        --card: rgba(255, 255, 255, 0.08);
+        --stroke: rgba(255, 255, 255, 0.18);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.72);
+        --pink: #ff4fd8;
+        --violet: #8a5bff;
+        --cyan: #4dfcff;
+        --shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+        --radius: 26px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Poppins,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--text);
+        overflow-x: hidden;
+        background:
+          radial-gradient(1200px 700px at 10% 10%, rgba(138, 91, 255, 0.22), transparent 60%), radial-gradient(900px 600px at 90% 20%, rgba(77, 252, 255, 0.16), transparent 60%),
+          radial-gradient(900px 600px at 50% 110%, rgba(255, 79, 216, 0.18), transparent 60%), linear-gradient(180deg, var(--bg1), var(--bg2));
+      }
+      #heartsCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.95;
+      }
+      .wrap {
+        position: relative;
+        z-index: 1;
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .shell {
+        width: min(980px, 100%);
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 18px;
+      }
+      @media (max-width: 880px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, var(--card), rgba(255, 255, 255, 0.05));
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        overflow: hidden;
+      }
+      .pad {
+        padding: 22px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 13px;
+        letter-spacing: 0.2px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--pink), var(--cyan));
+        box-shadow: 0 0 18px rgba(255, 79, 216, 0.55);
+      }
+      .envelope {
+        position: relative;
+        padding: 18px 18px 22px;
+        border-radius: calc(var(--radius) + 4px);
+        background: radial-gradient(900px 280px at 20% 0%, rgba(255, 79, 216, 0.18), transparent 55%), radial-gradient(700px 280px at 80% 10%, rgba(77, 252, 255, 0.12), transparent 55%), rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        overflow: hidden;
+      }
+      .envelope::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(90deg, rgba(255, 79, 216, 0.25), rgba(77, 252, 255, 0.18), rgba(138, 91, 255, 0.22));
+        filter: blur(20px);
+        opacity: 0.55;
+        z-index: 0;
+      }
+      .envelope-inner {
+        position: relative;
+        z-index: 1;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(10, 10, 20, 0.35);
+        padding: 18px;
+      }
+      .title {
+        margin: 12px 0 4px;
+        font-size: clamp(22px, 3.2vw, 34px);
+        line-height: 1.1;
+      }
+      .subtitle {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .nameFancy {
+        font-family: "Great Vibes", cursive;
+        font-size: clamp(44px, 6vw, 74px);
+        margin: 6px 0 8px;
+        line-height: 1;
+        background: linear-gradient(90deg, #ffd1f3, #d7d0ff, #bffcff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .msg {
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 10px 0 14px;
+      }
+      .countRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .chip {
+        min-width: 110px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .chip b {
+        display: block;
+        font-size: 20px;
+      }
+      .chip span {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .btnRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .btn {
+        cursor: pointer;
+        border: 0;
+        color: rgba(255, 255, 255, 0.92);
+        padding: 11px 14px;
+        border-radius: 14px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease,
+          border-color 0.12s ease;
+        user-select: none;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .btnPrimary {
+        background: linear-gradient(90deg, rgba(255, 79, 216, 0.75), rgba(138, 91, 255, 0.65));
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 14px 40px rgba(255, 79, 216, 0.18);
+      }
+      .btnGhost {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .rightTop {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .miniTitle {
+        margin: 10px 0 6px;
+        font-size: 18px;
+      }
+      .detail {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .hr {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.12);
+        margin: 16px 0;
+      }
+      .gameWrap {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        padding: 14px;
+        overflow: hidden;
+        position: relative;
+      }
+      .gameHud {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .hudChip {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        padding: 10px 10px;
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.86);
+      }
+      .arena {
+        height: 220px;
+        border-radius: 18px;
+        border: 1px dashed rgba(255, 255, 255, 0.18);
+        background: radial-gradient(450px 200px at 30% 30%, rgba(255, 79, 216, 0.14), transparent 60%), radial-gradient(450px 200px at 80% 70%, rgba(77, 252, 255, 0.1), transparent 60%), rgba(0, 0, 0, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+      .heartBtn {
+        position: absolute;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 26px;
+        transform: translate(-50%, -50%);
+        animation: pop 0.9s ease forwards;
+        user-select: none;
+      }
+      @keyframes pop {
+        0% {
+          transform: translate(-50%, -50%) scale(0.55);
+          opacity: 0;
+        }
+        25% {
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1.1);
+          opacity: 0;
+        }
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: radial-gradient(900px 500px at 20% 10%, rgba(255, 79, 216, 0.18), transparent 60%), radial-gradient(900px 500px at 80% 20%, rgba(77, 252, 255, 0.12), transparent 60%), rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .openCard {
+        width: min(640px, 100%);
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(15, 15, 30, 0.55);
+        box-shadow: var(--shadow);
+        padding: 22px;
+        text-align: center;
+      }
+      .openCard h1 {
+        margin: 8px 0 6px;
+        font-size: 22px;
+      }
+      .openCard p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .modalBox {
+        width: min(680px, 100%);
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(15, 15, 30, 0.65);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+      .modalBox h2 {
+        margin: 10px 0 6px;
+        font-size: 20px;
+      }
+      .modalBox p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+      .modalActions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        position: relative;
+        min-height: 52px;
+      }
+      .success {
+        margin-top: 10px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+        display: none;
+      }
+      .foot {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="heartsCanvas"></canvas>
+
+    <!-- Backsound: taruh file mp3 di assets/romantic.mp3 -->
+    <audio id="bgm" preload="auto" loop>
+      <source src="assets/romantic.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- OPEN overlay -->
+    <div class="overlay" id="overlay">
+      <div class="openCard">
+        <div class="badge" style="margin: 0 auto; justify-content: center">
+          <span class="dot"></span>
+          <span>Undangan Rahasia • Tap untuk buka</span>
+        </div>
+        <h1>💌 Ada pesan Valentine buat kamu…</h1>
+        <p>Buka pelan-pelan ya. Kalau kamu senyum, berarti berhasil 😄</p>
+        <button class="btn btnPrimary" id="btnOpen">Buka Undangan ✨</button>
+        <div class="foot">(Catatan: nama tetap bisa dari link, tapi setelah terbuka, query akan hilang dari address bar.)</div>
+      </div>
+    </div>
+
+    <!-- ASK modal -->
+    <div class="modal" id="modal">
+      <div class="modalBox">
+        <div class="badge">
+          <span class="dot"></span>
+          <span>Level selesai • Pertanyaan terakhir</span>
+        </div>
+        <h2 id="askTitle">Jadi… kamu mau Valentine bareng aku? 💘</h2>
+        <p id="askDesc">Jawab jujur ya. Tombol “nggak” itu… agak bandel 😅</p>
+
+        <div class="modalActions" id="modalActions">
+          <button class="btn btnPrimary" id="btnYes">Mau! 🥰</button>
+          <button class="btn btnGhost" id="btnNo">Nggak dulu 🙃</button>
+        </div>
+
+        <div class="success" id="successBox">
+          <b>Yey! 🎉</b>
+          <div id="successText" style="margin-top: 6px; color: rgba(255, 255, 255, 0.84); line-height: 1.6"></div>
+          <div class="btnRow" style="margin-top: 12px">
+            <button class="btn" id="btnCopyConfirm">Copy link ini</button>
+            <a class="btn" id="btnWAConfirm" target="_blank" rel="noopener">Share via WhatsApp</a>
+          </div>
+          <div class="foot" id="notifyStatus" style="margin-top: 10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <main class="wrap">
+      <section class="shell">
+        <!-- LEFT -->
+        <div class="card pad">
+          <div class="badge">
+            <span class="dot"></span>
+            <span id="badgeText">Valentine Invite</span>
+          </div>
+
+          <div class="envelope" style="margin-top: 14px">
+            <div class="envelope-inner">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+                <div>
+                  <div class="subtitle">Untuk:</div>
+                  <div class="nameFancy" id="toName">Vennycia</div>
+                </div>
+                <div style="text-align: right">
+                  <div class="subtitle">Dari:</div>
+                  <div style="font-weight: 700" id="fromName">Marcell</div>
+                </div>
+              </div>
+
+              <h2 class="title" id="headline">Mau jadi Valentine-ku? 💘</h2>
+              <p class="msg" id="message"></p>
+
+              <div class="subtitle" style="margin-top: 10px">Hitung mundur menuju momen kita:</div>
+              <div class="countRow">
+                <div class="chip"><b id="dd">00</b><span>Hari</span></div>
+                <div class="chip"><b id="hh">00</b><span>Jam</span></div>
+                <div class="chip"><b id="mm">00</b><span>Menit</span></div>
+                <div class="chip"><b id="ss">00</b><span>Detik</span></div>
+              </div>
+
+              <div class="btnRow">
+                <button class="btn btnPrimary" id="btnStartGame">Main mini-game 🎮</button>
+                <button class="btn" id="btnMusic">🎵 Music: Off</button>
+                <button class="btn" id="btnCopy">Copy link undangan</button>
+                <a class="btn btnGhost" id="btnWA" target="_blank" rel="noopener">Share WhatsApp</a>
+              </div>
+
+              <div class="foot">Marcell <b>&</b> Vennycia</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <aside class="card pad">
+          <div class="rightTop">
+            <div>
+              <div class="badge">
+                <span class="dot"></span>
+                <span>Detail kencan</span>
+              </div>
+              <h3 class="miniTitle">📍 Rencana Valentine</h3>
+              <p class="detail" id="details"></p>
+            </div>
+            <div class="badge"><span class="dot"></span><span>💗</span></div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3 class="miniTitle">🎯 Mini-Game: Tangkap 7 Hati</h3>
+          <p class="detail" style="margin-bottom: 12px">Klik hati yang muncul. Kalau skormu <b>7</b> sebelum waktunya habis, kamu unlock pertanyaan spesial 😄</p>
+
+          <div class="gameWrap">
+            <div class="gameHud">
+              <div class="hudChip">SCORE: <span id="score">0</span>/7</div>
+              <div class="hudChip">TIME: <span id="time">15</span>s</div>
+              <button class="btn" id="btnGame" style="padding: 10px 12px">Start</button>
+            </div>
+            <div class="arena" id="arena"></div>
+          </div>
+
+          <div class="foot">Semangattt Main Mini Game Nyaa...</div>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      /***********************
+       * CONFIG (UBAH INI)
+       ***********************/
+      const CONFIG = {
+        toNameDefault: "Vennycia",
+        fromNameDefault: "— Marcell",
+
+        headline: "Mau jadi Valentine-ku? 💘",
+        message: "Aku bikin undangan kecil ini khusus buat kamu. Kita jalan bareng dan bikin hari itu jadi lebih manis ☺️",
+
+        dateLabel: "Sabtu, 14 Februari 2026",
+        timeLabel: "19:00 WITA",
+        placeLabel: "Tempat favorit kamu 😄",
+        dressCode: "Bebas ✨",
+        extraNote: "Kalau kamu setuju, aku traktir dessert 🍰",
+
+        targetDateTimeISO: "2026-02-14T19:00:00+08:00",
+
+        gameTargetScore: 7,
+        gameTimeLimitSec: 15,
+      };
+
+      /***********************
+       * Helpers
+       ***********************/
+      const $ = (q) => document.querySelector(q);
+      const pad2 = (n) => String(n).padStart(2, "0");
+
+      function safeText(s, fallback) {
+        if (!s) return fallback;
+        const cleaned = String(s).replace(/[<>]/g, "").trim().slice(0, 40);
+        return cleaned || fallback;
+      }
+
+      // Base URL tanpa query/hash, aman untuk file:// maupun https://
+      function getBaseUrl() {
+        return location.href.split("#")[0].split("?")[0];
+      }
+
+      // Akan diisi saat hydrate
+      let SHARE_URL = "";
+
+      function buildShareUrl(to, from) {
+        const base = getBaseUrl();
+        const u = new URL(base, base);
+        u.searchParams.set("to", to);
+        u.searchParams.set("from", from);
+        return u.toString();
+      }
+
+      function buildShareText() {
+        const to = $("#toName").textContent;
+        const from = $("#fromName").textContent;
+        return `💌 Undangan Valentine\nUntuk: ${to}\nDari: ${from}\n\nBuka di sini ya:\n${SHARE_URL}`;
+      }
+
+      function setWhatsAppLinks() {
+        const text = encodeURIComponent(buildShareText());
+        const url = `https://wa.me/?text=${text}`;
+        $("#btnWA").href = url;
+        $("#btnWAConfirm").href = url;
+      }
+
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (e) {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+            ta.remove();
+            return true;
+          } catch (err) {
+            ta.remove();
+            return false;
+          }
+        }
+      }
+
+      // Hilangkan query di address bar (tapi nama sudah kebaca)
+      function hideQueryFromAddressBar() {
+        try {
+          const base = getBaseUrl();
+          history.replaceState({}, document.title, base);
+        } catch (e) {}
+      }
+
+      /***********************
+       * Hydrate
+       ***********************/
+      function hydrate() {
+        const p = new URLSearchParams(location.search);
+
+        const to = safeText(p.get("to"), CONFIG.toNameDefault);
+        const from = safeText(p.get("from"), CONFIG.fromNameDefault);
+
+        $("#toName").textContent = to;
+        $("#fromName").textContent = from;
+
+        $("#headline").textContent = CONFIG.headline;
+        $("#message").textContent = CONFIG.message;
+
+        $("#details").innerHTML = `
+        <b>🗓️ ${CONFIG.dateLabel}</b><br/>
+        <b>🕗 ${CONFIG.timeLabel}</b><br/>
+        <b>📍 ${CONFIG.placeLabel}</b><br/>
+        <b>👕 Dress code:</b> ${CONFIG.dressCode}<br/>
+        <b>✨ Catatan:</b> ${CONFIG.extraNote}
+      `;
+
+        $("#badgeText").textContent = `Valentine Invite • ${CONFIG.dateLabel}`;
+
+        // Share URL tetap berisi to/from, walau address bar kita bersihin
+        SHARE_URL = buildShareUrl(to, from);
+        setWhatsAppLinks();
+
+        // Kalau ada query params, bersihkan dari address bar
+        if (location.search.includes("to=") || location.search.includes("from=")) {
+          hideQueryFromAddressBar();
+        }
+      }
+
+      /***********************
+       * Countdown
+       ***********************/
+      function startCountdown() {
+        const target = new Date(CONFIG.targetDateTimeISO).getTime();
+
+        function tick() {
+          const now = Date.now();
+          let diff = Math.max(0, target - now);
+
+          const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+          diff -= d * (1000 * 60 * 60 * 24);
+          const h = Math.floor(diff / (1000 * 60 * 60));
+          diff -= h * (1000 * 60 * 60);
+          const m = Math.floor(diff / (1000 * 60));
+          diff -= m * (1000 * 60);
+          const s = Math.floor(diff / 1000);
+
+          $("#dd").textContent = pad2(d);
+          $("#hh").textContent = pad2(h);
+          $("#mm").textContent = pad2(m);
+          $("#ss").textContent = pad2(s);
+
+          if (target - now <= 0) {
+            $("#headline").textContent = "Hari ini hari H! 💞";
+            $("#message").textContent = "Kalau kamu lihat ini, berarti semesta mendukung kita. Gas? 😄";
+          }
+        }
+
+        tick();
+        setInterval(tick, 1000);
+      }
+
+      /***********************
+       * Music
+       ***********************/
+      const bgm = document.getElementById("bgm");
+      let musicOn = false;
+
+      async function startMusic() {
+        if (!bgm) return;
+        try {
+          bgm.volume = 0.35;
+          await bgm.play();
+          musicOn = true;
+          $("#btnMusic").textContent = "🎵 Music: On";
+        } catch (e) {
+          // Kalau gagal (mis. file belum ada), biarin aja.
+          musicOn = false;
+          $("#btnMusic").textContent = "🎵 Music: Off";
+        }
+      }
+
+      async function toggleMusic() {
+        if (!bgm) return;
+        if (!musicOn) {
+          await startMusic();
+        } else {
+          bgm.pause();
+          musicOn = false;
+          $("#btnMusic").textContent = "🎵 Music: Off";
+        }
+      }
+
+      /***********************
+       * Overlay open
+       ***********************/
+      async function openInvite() {
+        $("#overlay").style.display = "none";
+
+        // confetti
+        if (window.confetti) {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.65 } });
+        }
+
+        // Autoplay aman karena ini dipicu klik user
+        await startMusic();
+      }
+
+      /***********************
+       * Mini-game
+       ***********************/
+      let gameTimer = null;
+      let spawnTimer = null;
+      let timeLeft = CONFIG.gameTimeLimitSec;
+      let score = 0;
+      let gameRunning = false;
+
+      function resetGame() {
+        timeLeft = CONFIG.gameTimeLimitSec;
+        score = 0;
+        gameRunning = false;
+        $("#score").textContent = score;
+        $("#time").textContent = timeLeft;
+        $("#btnGame").textContent = "Start";
+        $("#arena").innerHTML = "";
+        clearInterval(gameTimer);
+        clearInterval(spawnTimer);
+        gameTimer = null;
+        spawnTimer = null;
+      }
+
+      function spawnHeart() {
+        const arena = $("#arena");
+        const rect = arena.getBoundingClientRect();
+        const x = Math.random() * rect.width;
+        const y = Math.random() * rect.height;
+
+        const btn = document.createElement("button");
+        btn.className = "heartBtn";
+        btn.type = "button";
+        btn.textContent = Math.random() > 0.6 ? "💗" : Math.random() > 0.5 ? "💘" : "💖";
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+
+        btn.addEventListener("click", () => {
+          if (!gameRunning) return;
+          score += 1;
+          $("#score").textContent = score;
+
+          if (window.confetti) {
+            confetti({
+              particleCount: 18,
+              spread: 50,
+              startVelocity: 22,
+              origin: {
+                x: (rect.left + x) / window.innerWidth,
+                y: (rect.top + y) / window.innerHeight,
+              },
+            });
+          }
+
+          btn.remove();
+
+          if (score >= CONFIG.gameTargetScore) {
+            winGame();
+          }
+        });
+
+        arena.appendChild(btn);
+        setTimeout(() => btn.remove(), 900);
+      }
+
+      function startGame() {
+        resetGame();
+        gameRunning = true;
+        $("#btnGame").textContent = "Running…";
+        spawnTimer = setInterval(spawnHeart, 420);
+        gameTimer = setInterval(() => {
+          timeLeft -= 1;
+          $("#time").textContent = timeLeft;
+          if (timeLeft <= 0) {
+            endGame(false);
+          }
+        }, 1000);
+      }
+
+      function endGame(won) {
+        gameRunning = false;
+        clearInterval(gameTimer);
+        clearInterval(spawnTimer);
+        gameTimer = null;
+        spawnTimer = null;
+        $("#btnGame").textContent = won ? "Done ✅" : "Coba lagi";
+        if (!won) {
+          $("#askDesc").textContent = "Wkwk hampir! Coba lagi ya, biar kebuka pertanyaannya 😄";
+        }
+      }
+
+      function winGame() {
+        endGame(true);
+        showAskModal();
+      }
+
+      /***********************
+       * Ask modal + Notify
+       ***********************/
+      function showAskModal() {
+        $("#modal").style.display = "flex";
+        $("#askTitle").textContent = `Jadi… ${$("#toName").textContent}, mau Valentine bareng aku? 💘`;
+        $("#askDesc").textContent = "Janji seru, manis, dan nggak lebay (dikit boleh) 😅";
+        $("#successBox").style.display = "none";
+        $("#notifyStatus").textContent = "";
+        $("#btnNo").style.left = "0px";
+        $("#btnNo").style.top = "0px";
+        $("#btnNo").textContent = "Nggak dulu 🙃";
+      }
+
+      function runAwayNo() {
+        const btn = $("#btnNo");
+        const box = $("#modalActions").getBoundingClientRect();
+        const maxX = Math.max(0, box.width - btn.offsetWidth - 8);
+        const maxY = 38;
+        const x = Math.random() * maxX - maxX / 2;
+        const y = Math.random() * maxY - maxY / 2;
+        btn.style.position = "relative";
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+        const variants = ["Eits 😜", "Kok lari? 😂", "Coba klik lagi 😆", "Hehe nggak bisa 😅"];
+        btn.textContent = variants[Math.floor(Math.random() * variants.length)];
+      }
+
+      async function notifyAccepted() {
+        // Ini akan berhasil kalau kamu deploy di Vercel + ada api/notify.js
+        try {
+          const payload = {
+            to: $("#toName").textContent,
+            from: $("#fromName").textContent,
+            url: SHARE_URL,
+            acceptedAt: new Date().toISOString(),
+          };
+          const res = await fetch("/api/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.ok) {
+            $("#notifyStatus").textContent = "✅ Notifikasi terkirim ke kamu (otomatis).";
+          } else {
+            $("#notifyStatus").textContent = "⚠️ Notifikasi gagal (api belum diset / bukan di Vercel).";
+          }
+        } catch (e) {
+          $("#notifyStatus").textContent = "⚠️ Notifikasi belum aktif (jalankan di Vercel untuk fitur ini).";
+        }
+      }
+
+      async function acceptYes() {
+        if (window.confetti) {
+          confetti({ particleCount: 180, spread: 90, origin: { y: 0.6 } });
+          setTimeout(() => confetti({ particleCount: 120, spread: 120, origin: { y: 0.7 } }), 250);
+        }
+
+        const text = `
+        <div>✅ Oke, deal! 🥰</div>
+        <div style="margin-top:6px;">
+          <b>Rencana:</b> ${CONFIG.dateLabel} • ${CONFIG.timeLabel}<br/>
+          <b>Tempat:</b> ${CONFIG.placeLabel}<br/>
+          <b>Dress code:</b> ${CONFIG.dressCode}
+        </div>
+        <div style="margin-top:8px;">Balas chat ini ya biar kita fix-in detailnya 💬</div>
+      `;
+        $("#successText").innerHTML = text;
+        $("#successBox").style.display = "block";
+        setWhatsAppLinks();
+
+        // Kirim notifikasi ke kamu
+        await notifyAccepted();
+      }
+
+      /***********************
+       * Hearts canvas
+       ***********************/
+      function startHeartsCanvas() {
+        const canvas = document.getElementById("heartsCanvas");
+        const ctx = canvas.getContext("2d");
+        let w, h;
+
+        function resize() {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        const hearts = Array.from({ length: 32 }, () => makeHeart());
+        function makeHeart() {
+          return {
+            x: Math.random() * w,
+            y: h + Math.random() * h,
+            size: 10 + Math.random() * 18,
+            speed: 0.35 + Math.random() * 0.95,
+            sway: 0.6 + Math.random() * 1.6,
+            phase: Math.random() * Math.PI * 2,
+            alpha: 0.25 + Math.random() * 0.4,
+            emoji: Math.random() > 0.6 ? "💗" : Math.random() > 0.5 ? "💖" : "💘",
+          };
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, w, h);
+          hearts.forEach((p) => {
+            p.y -= p.speed;
+            p.phase += 0.02;
+            p.x += Math.sin(p.phase) * p.sway * 0.6;
+            if (p.y < -50) Object.assign(p, makeHeart(), { y: h + 50 });
+            ctx.globalAlpha = p.alpha;
+            ctx.font = `${p.size}px Poppins`;
+            ctx.fillText(p.emoji, p.x, p.y);
+          });
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(draw);
+        }
+        draw();
+      }
+
+      /***********************
+       * Wire events
+       ***********************/
+      function wire() {
+        $("#btnOpen").addEventListener("click", openInvite);
+
+        $("#btnMusic").addEventListener("click", toggleMusic);
+
+        $("#btnCopy").addEventListener("click", async () => {
+          const ok = await copyText(SHARE_URL);
+          $("#btnCopy").textContent = ok ? "Tercopy ✅" : "Gagal copy 😅";
+          setTimeout(() => ($("#btnCopy").textContent = "Copy link undangan"), 1200);
+        });
+
+        $("#btnCopyConfirm").addEventListener("click", async () => {
+          const ok = await copyText(SHARE_URL);
+          $("#btnCopyConfirm").textContent = ok ? "Tercopy ✅" : "Gagal copy 😅";
+          setTimeout(() => ($("#btnCopyConfirm").textContent = "Copy link ini"), 1200);
+        });
+
+        $("#btnStartGame").addEventListener("click", () => {
+          startGame();
+          $("#arena").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+
+        $("#btnGame").addEventListener("click", () => {
+          if (!gameRunning) startGame();
+        });
+
+        $("#btnYes").addEventListener("click", acceptYes);
+        $("#btnNo").addEventListener("mouseenter", runAwayNo);
+        $("#btnNo").addEventListener("click", runAwayNo);
+
+        $("#modal").addEventListener("click", (e) => {
+          if (e.target.id === "modal") $("#modal").style.display = "none";
+        });
+      }
+
+      /***********************
+       * Init
+       ***********************/
+      hydrate();
+      startCountdown();
+      startHeartsCanvas();
+      wire();
+      resetGame();
+    </script>
+  </body>
+</html>
